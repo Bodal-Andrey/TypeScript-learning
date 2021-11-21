@@ -1,25 +1,144 @@
 import React from 'react';
 import './App.css';
 
+type Position = {
+  id: string,
+  value: string,
+  title: string
+};
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+type FormState = {
+  inputText: string,
+  textareaText: string,
+  selectText: string,
+  showData: {
+    name: string,
+    text: string,
+    position: string,
+  }
+};
+
+const POSITIONS: Array<Position> = [
+  {
+    id: 'fd',
+    value: 'Front-end Developer',
+    title: 'Front-end Developer',
+  },
+  {
+    id: 'bd',
+    value: 'Back-end Developer',
+    title: 'Back-end Developer',
+  }
+];
+
+const DEFAULT_SELECT_VALUE: string = POSITIONS[0].value;
+
+const styles: React.CSSProperties = {
+  display: 'block',
+  marginBottom: '10px',
+};
+
+class Form extends React.Component<{}, FormState> {
+
+  state = {
+    inputText: '',
+    textareaText: '',
+    selectText: DEFAULT_SELECT_VALUE,
+    showData: {
+      name: '',
+      text: '',
+      position: '',
+    }
+  }
+
+  private rootRef = React.createRef<HTMLSelectElement>();
+
+  handleInputChange = (evt: React.ChangeEvent<HTMLInputElement>): void => {
+    const { target: { value: inputText } } = evt;
+    this.setState({
+      inputText
+    });
+  }
+
+  handleTextareaChange = (evt: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    const { target: { value: textareaText } } = evt;
+    this.setState({
+      textareaText
+    });
+  }
+
+  handleSelectChange = (evt: React.ChangeEvent<HTMLSelectElement>): void => {
+    const { target: { value: selectText } } = evt;
+    this.setState({
+      selectText
+    });
+  }
+
+  handleShow = (evt: React.MouseEvent<HTMLButtonElement>): void => {
+    evt.preventDefault();
+    const { inputText, textareaText, selectText } = this.state;
+
+    this.setState({
+      inputText: '',
+      textareaText: '',
+      selectText: DEFAULT_SELECT_VALUE,
+      showData: {
+        name: inputText,
+        text: textareaText,
+        position: selectText,
+      }
+    });
+  }
+
+  render() {
+    const { inputText, textareaText, selectText, showData } = this.state;
+    const { name, text, position } = showData;
+
+    return (
+      <>
+        <form>
+          <label style={styles}>
+            Name:
+            <input
+              type="text"
+              value={inputText}
+              onChange={this.handleInputChange}
+            />
+          </label>
+
+          <label style={styles}>
+            Text:
+            <textarea
+              value={textareaText}
+              onChange={this.handleTextareaChange}
+            />
+          </label>
+
+          <select
+            style={styles}
+            value={selectText}
+            onChange={this.handleSelectChange}
+            ref={this.rootRef}
+          >
+            {POSITIONS.map(({ id, value, title }) => (
+              <option
+                key={id}
+                value={value}
+              >{title}</option>
+            ))}
+          </select>
+
+          <button onClick={this.handleShow}>Show Data</button>
+        </form>
+
+        <h2>{name}</h2>
+        <h3>{text}</h3>
+        <h3>{position}</h3>
+      </>
+    );
+  }
 }
+
+const App: React.FC = () => <Form />
 
 export default App;
