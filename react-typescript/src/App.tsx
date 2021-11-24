@@ -1,25 +1,39 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+type InjectedProps = {
+  toggleStatus: Boolean,
+  toggle: () => void,
+};
+
+type BaseProps = {
+  primTitle: string,
+  secTitle?: string,
+};
+
+const Button = ({toggle, toggleStatus, primTitle, secTitle}: any) => (
+  <button onClick={toggle}>
+    {toggleStatus ? primTitle : secTitle}
+  </button>
+);
+
+const withToggle = <BaseProps extends InjectedProps>(PassedComponent: React.ComponentType<BaseProps>) => {
+  return (props: BaseProps) => {
+    const [toggleStatus, toggle] = useState(false);
+
+    return (
+      <PassedComponent
+        {...props as BaseProps}
+        toggle={() => toggle(!toggleStatus)}
+        toggleStatus={toggleStatus}
+      />
+    );
+  }
+};
+
+const ToggleButton = withToggle(Button);
+
+const App:React.FC = () => <ToggleButton primTitle="Main Title" secTitle="Additional Title" />;
 
 export default App;
