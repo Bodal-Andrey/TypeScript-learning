@@ -1,23 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
 
-interface Ipost {
+interface IPost {
     title?: string,
     id?: number,
 }
 
 type PostState = {
-    data: Ipost[],
+    data: IPost[],
 };
 
-class Posts extends React.Component<{}, PostState> {
+interface IPosts extends RouteComponentProps {
+    test?: number,
+}
+
+class Posts extends React.Component<IPosts, PostState> {
     state = {
         data: [],
     };
 
     componentDidMount() {
         fetch('https://jsonplaceholder.typicode.com/posts/')
-            .then(res => res.json())
+            .then(res => res.json() as Promise<IPost[]>)
             .then(data => { this.setState({ data }) })
     }
 
@@ -28,7 +33,7 @@ class Posts extends React.Component<{}, PostState> {
             <div>
                 <h1>Posts:</h1>
                 <ul className="posts">
-                    {data.map(({ id, title }: Ipost) =>
+                    {data.map(({ id, title }: IPost) =>
                         <li key={id}>
                             <Link to={`posts/${id}`}>{title}</Link>
                         </li>

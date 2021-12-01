@@ -14,6 +14,12 @@ type PostState = {
     post: IPost
 };
 
+export async function http<T>(request: string): Promise<T> {
+    const response = await fetch(request);
+    const body = await response.json();
+    return body;
+}
+
 class Post extends React.Component<RouteComponentProps<RouteParams>, PostState> {
     state = {
         post: {
@@ -22,18 +28,17 @@ class Post extends React.Component<RouteComponentProps<RouteParams>, PostState> 
         },
     };
 
-    componentDidMount() {
+    async componentDidMount() {
         const id = this.props.match.params.id || '';
-console.log(id)
-        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
-            .then(res => res.json())
-            .then(post => { this.setState({ post }) })
+
+        const post = await http<IPost>(`https://jsonplaceholder.typicode.com/posts/${id}`);
+        this.setState({post});
     }
 
     render() {
         const { post } = this.state;
         const { title, body } = post;
-console.log(post)
+
         return (
             <section>
                 <h1>Post</h1>
